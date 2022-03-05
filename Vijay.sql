@@ -8,4 +8,4 @@ select count(productno) from BUSINESS_SALES_TRANSACTION where transactiondate li
 
 select productno,productname from BUSINESS_SALES_TRANSACTION where price>2.01;
 
-select count(unique productno) from BUSINESS_SALES_TRANSACTION where price<2.01;
+select count(unique productno) from BUSINESS_SALES_TRANSACTION where price<2.04;
