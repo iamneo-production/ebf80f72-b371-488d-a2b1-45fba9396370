@@ -1,0 +1,156 @@
+--1. Count the customers from each country
+CREATE OR REPLACE PROCEDURE CUS_COUNT_FROM_EACH_COUNTRY
+AS
+BEGIN
+FOR i IN(SELECT COUNTRY,COUNT(CUSTOMERNO) CNO FROM BUSINESS_SALES_TRANSACTION
+GROUP BY COUNTRY) LOOP 
+DBMS_OUTPUT.PUT_LINE(i.COUNTRY||'        '||i.CNO);
+END LOOP;
+END;
+
+BEGIN
+CUS_COUNT_FROM_EACH_COUNTRY();
+END;
+
+--2. Count the customers from each year
+CREATE OR REPLACE PROCEDURE CUS_COUNT_EACH_YEAR
+AS
+BEGIN
+FOR i IN(SELECT EXTRACT(year from TRANSACTIONDATE) year,COUNT(CUSTOMERNO) CNO
+FROM BUSINESS_SALES_TRANSACTION
+GROUP BY EXTRACT(year from TRANSACTIONDATE)) LOOP
+DBMS_OUTPUT.PUT_LINE(i.year||'     '||i.CNO);
+END LOOP;
+END;
+
+BEGIN
+CUS_COUNT_EACH_YEAR();
+END;
+
+--3. List all the unique product names sold from each year
+CREATE OR REPLACE PROCEDURE UNIQ_PRO_EACH_YEAR
+AS
+BEGIN
+FOR i IN(SELECT EXTRACT(year from TRANSACTIONDATE) YEAR,PRODUCTNAME
+FROM BUSINESS_SALES_TRANSACTION
+GROUP BY EXTRACT(year from TRANSACTIONDATE),PRODUCTNAME) LOOP
+DBMS_OUTPUT.PUT_LINE(i.YEAR||'      '||i.PRODUCTNAME);
+END LOOP;
+END;
+
+BEGIN
+UNIQ_PRO_EACH_YEAR();
+END;
+
+--4. List all unique Product names sold from 2018-12-01 to 2019-02-27
+CREATE OR REPLACE PROCEDURE UNIQ_PRO_SOLD
+AS
+BEGIN
+FOR i IN(SELECT DISTINCT(PRODUCTNAME) PRODUCT
+FROM BUSINESS_SALES_TRANSACTION
+WHERE TRANSACTIONDATE BETWEEN
+TO_DATE('2018-12-01','YYYY-MM-DD') AND TO_DATE('2019-02-27','YYYY-MM-DD')) LOOP
+DBMS_OUTPUT.PUT_LINE(i.PRODUCT);
+END LOOP;
+END;
+
+BEGIN
+UNIQ_PRO_SOLD();
+END;
+
+--5. Count the products sale in the year 2019
+CREATE OR REPLACE PROCEDURE PRO_SALE_2019
+AS
+BEGIN
+FOR i IN(select sum(QUANTITY) as productsale,extract(year from transactiondate) year
+from BUSINESS_SALES_TRANSACTION 
+group by extract(year from transactiondate) 
+having extract (year from TRANSACTIONDATE) = '2019') LOOP
+DBMS_OUTPUT.PUT_LINE(i.productsale||'      '||i.year);
+END LOOP;
+END;
+
+BEGIN
+PRO_SALE_2019();
+END;
+
+--6. Count the product sale in the year 2019 month-wise
+CREATE OR REPLACE PROCEDURE PRO_SALE_MONTHWISE
+AS
+BEGIN
+FOR i IN(select sum(QUANTITY) as productsale_monthwise,
+to_char(to_date(extract(month from TRANSACTIONDATE),'MM'),'MONTH') as Month 
+from BUSINESS_SALES_TRANSACTION 
+where extract (year from TRANSACTIONDATE) = '2019'
+group by extract(month from TRANSACTIONDATE)) LOOP
+DBMS_OUTPUT.PUT_LINE(i.productsale_monthwise||'      '||i.Month);
+END LOOP;
+END; 
+
+BEGIN
+PRO_SALE_MONTHWISE();
+END;
+
+--7. Total sale amount in each year
+CREATE OR REPLACE PROCEDURE TOTAL_SALE_AMOUNT
+AS
+BEGIN
+FOR i IN(select sum (PRICE * QUANTITY) as TotalSale_Amount ,extract (year from TRANSACTIONDATE) as Year 
+from BUSINESS_SALES_TRANSACTION 
+group by extract (year from TRANSACTIONDATE)) LOOP
+DBMS_OUTPUT.PUT_LINE(i.Totalsale_amount||'      '||i.Year);
+END LOOP;
+END;
+
+BEGIN
+TOTAL_SALE_AMOUNT();
+END;
+
+--8.Total sale amount of each product in the year 2019
+CREATE OR REPLACE PROCEDURE TOTAL_SALE_AMOUNT_EACH_PRODUCT_2019
+AS
+BEGIN
+FOR i IN(select sum (PRICE * QUANTITY) as TotalSale_Amount ,PRODUCTNAME
+from BUSINESS_SALES_TRANSACTION where extract (year from TRANSACTIONDATE) = '2019'
+group by PRODUCTNAME) LOOP
+DBMS_OUTPUT.PUT_LINE(i.Totalsale_Amount||'      '||i.PRODUCTNAME);
+END LOOP;
+END;
+
+BEGIN
+TOTAL_SALE_AMOUNT_EACH_PRODUCT_2019();
+END;
+
+--9. Count each product sale in 2019 Feb month
+CREATE OR REPLACE PROCEDURE PRO_SALE_2019_FEB
+AS
+BEGIN
+FOR i IN(select sum(QUANTITY)as productsale 
+from BUSINESS_SALES_TRANSACTION 
+where extract(year from TRANSACTIONDATE) = '2019' and extract(month from TRANSACTIONDATE) = '02'
+group by extract(month from TRANSACTIONDATE)) LOOP
+DBMS_OUTPUT.PUT_LINE(i.productsale);
+END LOOP;
+END; 
+
+BEGIN
+PRO_SALE_2019_FEB();
+END;
+
+--10.Total sale amount of each product month-wise in the year 2019
+CREATE OR REPLACE PROCEDURE TOTAL_SALE_AMOUNT_MONTHWISE_2019
+AS
+BEGIN
+FOR i IN(select sum(PRICE * QUANTITY)as Totalsale_Amount_Monthwise, 
+to_char(to_date(extract(month from TRANSACTIONDATE),'MM'),'MONTH') as Month 
+from BUSINESS_SALES_TRANSACTION 
+where extract (year from TRANSACTIONDATE) = '2019'
+group by extract(month from TRANSACTIONDATE)) LOOP
+DBMS_OUTPUT.PUT_LINE(i.Totalsale_Amount_Monthwise||'        '||i.Month);
+END LOOP;
+END; 
+
+BEGIN
+TOTAL_SALE_AMOUNT_MONTHWISE_2019();
+END;
+ 
