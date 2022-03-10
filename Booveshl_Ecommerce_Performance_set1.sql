@@ -120,12 +120,12 @@ end;
 CREATE or REPLACE procedure Monthly_SaleAmountOf_Eachproduct_inthe_yearOf(year number)
 as
 begin
-for i in (select sum(PRICE * QUANTITY)as Totalsale_Amount, to_char(to_date(extract(month from TRANSACTIONDATE),'MM'),'MONTH') as Month 
+for i in (select distinct(productname)product_name,sum(PRICE * QUANTITY)as Totalsale_Amount, to_char(to_date(extract(month from TRANSACTIONDATE),'MM'),'MONTH') as Month 
           from BUSINESS_SALES_TRANSACTION 
           where extract (year from TRANSACTIONDATE) = year
-          group by extract(month from transactiondate)
+          group by extract(month from transactiondate),productname
          ) loop
-dbms_output.put_line(i.TotalSale_Amount||' -- ' ||i.Month);
+dbms_output.put_line(i.product_name||'  --  '||i.TotalSale_Amount||' -- ' ||i.Month);
 end loop;
 end;
 
