@@ -122,7 +122,7 @@ as
 begin
 for i in (select sum(PRICE * QUANTITY)as Totalsale_Amount, to_char(to_date(extract(month from TRANSACTIONDATE),'MM'),'MONTH') as Month 
           from BUSINESS_SALES_TRANSACTION 
-          where extract (year from TRANSACTIONDATE) = '2019'
+          where extract (year from TRANSACTIONDATE) = year
           group by extract(month from transactiondate)
          ) loop
 dbms_output.put_line(i.TotalSale_Amount||' -- ' ||i.Month);
